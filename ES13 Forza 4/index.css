@@ -23,6 +23,7 @@ h1 {
 	padding: 5px;  /* Compenso i 5+5 di MARGIN delle pedine interne */
 	background-color: rgb(20,20,255);
     overflow: auto;
+    position: relative;
 }
 
 .pedina {

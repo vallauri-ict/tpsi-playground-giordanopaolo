@@ -3,7 +3,7 @@ const RIGHE = 6;
 const COLONNE = 7;
 const GIALLO = "rgb(255, 255, 0)";
 const ROSSO = "rgb(255, 0, 0)";
-const GRIGIO = "#BBB";
+const GRIGIO = "rgb(187, 187, 187)";
 
 let turno = GIALLO;
 $(document).ready( function(){
@@ -55,19 +55,61 @@ $(document).ready( function(){
 
 
     function down(){
-        let pedina = $("<div>");
         //restituisce l'indice di $(this) all'interno del contenitore
         let colonna = hd.children("div").index($(this));
         let riga = RIGHE - 1; ///posizione della prima cella libera
         for(let i = 0 ; i < RIGHE ;i++)
         {
+            
             let p = $(`#btn-${i}-${colonna}`);
+            console.log(p.css("backgroundColor"));
             if(p.css("backgroundColor") != GRIGIO)
             {
                 riga = i - 1;
                 break;
             }
         }
+        ///se c'è una cella libera entra nella if
+        if(riga!=-1)
+        {
+            let pedina = $("<div>");
+            pedina.appendTo(wr);
+            pedina.addClass("pedina");
+            pedina.css({"backgroundColor":turno,
+                        "position":"absolute",
+                        ///-60 per solo dei numeri, "-60px" per mettere px
+                        "top":-60,
+                        "left":colonna*60+5
+                    });
+            hd.off("click");
+            let _turno = turno;
+            
+            if(turno == GIALLO)
+                turno = ROSSO;
+            else turno = GIALLO;
+            $(this).trigger("mouseenter");
+            pedina.animate({"top":riga*60 + 5},200*(riga+1),function(){
+                
+                $(`#btn-${riga}-${colonna}`).css({"backgroundColor":_turno});
+               
+                //non posso fare hd.on("click", down); perchè non posso fare un misto
+                hd.on("click", "div", down);
+               
+            });
+            
+
+
+
+            
+            
+        }
+        else alert("Mossa non valida");
+
+        
+        
+
+
+        
     }
 
 
