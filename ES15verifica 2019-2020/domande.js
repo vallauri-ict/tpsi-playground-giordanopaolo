@@ -1,4 +1,4 @@
-var elencoDomande = [
+let elencoDomande = [
     { "argomento":"Geografia e Europa",
 	  "domande":[
 		  {"domanda":"New York è la capitale degli USA", "risposta":"F"},

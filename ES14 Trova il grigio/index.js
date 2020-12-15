@@ -14,7 +14,6 @@ $(document).ready(function() {
         div.css("backgroundColor",`rgb(${n}, ${n}, ${n})`);
         div.appendTo(wr);
         divs[i]=div;
-        
         console.log(divs);
         div.hover(function(){
             div.attr("placeholder","Ciao");

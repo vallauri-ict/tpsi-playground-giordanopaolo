@@ -88,34 +88,9 @@ $(document).ready( function(){
                 hd.on("click", "div", down);
                
             });
-            
-
-
-
-            
-            
         }
         else alert("Mossa non valida");
-
-        
-        
-
-
-        
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
     function GeneraNumero(min, max)
     {
         return Math.floor((max - min + 1 ) * Math.random() + min);
