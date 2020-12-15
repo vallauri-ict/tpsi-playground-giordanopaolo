@@ -46,14 +46,6 @@ $(document).ready( function(){
 
 
 
-
-
-
-
-
-
-
-
     function down(){
         //restituisce l'indice di $(this) all'interno del contenitore
         let colonna = hd.children("div").index($(this));
