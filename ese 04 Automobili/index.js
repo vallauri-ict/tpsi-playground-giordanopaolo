@@ -56,7 +56,7 @@ $(document).ready(function () {
     /****************************************/
     _lstMarche.on("change", function(){
         _lstModelli.html("");
-        let codMarca= _lstMarche.val();
+        let codMarca = _lstMarche.val();
         let request = inviaRichiesta("get", URL + "/modelli?codMarca=" + codMarca);
         request.fail(errore);
         request.done(function(modelli){
@@ -65,18 +65,20 @@ $(document).ready(function () {
                 op.val(modello.id);
                 op.text(modello.nome + " - " + modello.alimentazione);
                 op.appendTo(_lstModelli);
-                
+                // salvo dentro ogni opzione tutte le info del modello selezionato
+                op.prop("modello", modello);
             }
-            
             _lstModelli.prop("selectedIndex",-1);
         });
     })
     /*nomeModello, alimentazione, colore, anno, img. Le immagini hanno una altezza fissa di 65px.*/
     _lstModelli.on("change", function(){
         _table.empty();
-        let opzione_selezionata = _lstModelli.children("option").eq(_lstModelli.prop("selectedIndex")).text();
-        _lstModelli.prop("nome", opzione_selezionata.split(" - ")[0])
-        _lstModelli.prop("alimentazione", opzione_selezionata.split(" - ")[1])
+        let opzione_selezionata = _lstModelli.children("option").eq(_lstModelli.prop("selectedIndex"));
+        // _lstModelli.prop("nome", opzione_selezionata.split(" - ")[0]);
+        // _lstModelli.prop("alimentazione", opzione_selezionata.split(" - ")[1]);
+        // Vado a salvare dentro il list box le info relative al modello selezionato
+        _lstModelli.prop("modello", opzione_selezionata.prop("modello")) 
         console.log(opzione_selezionata);
         let codModello = _lstModelli.val();
         let request = inviaRichiesta("get", URL + "/automobili?codModello=" + codModello);
@@ -84,7 +86,7 @@ $(document).ready(function () {
         request.done(function(automobili){
             let thead = $("<thead>");
             thead.appendTo(_table);
-            let tr=$("<tr>");
+            let tr = $("<tr>");
             tr.appendTo(thead);
             for (let i = 0; i < intestazione.length; i++) {
                 let th = $(`<${intestazione[i].tag}>`);
@@ -94,50 +96,91 @@ $(document).ready(function () {
                 th.css({"width":intestazione[i].width});
             }
             let tbody = $("<tbody>");
-            tbody.appendTo(_table)
+            tbody.appendTo(_table);
             for (const auto of automobili) {
                 let tr = $("<tr>");
                 tr.appendTo(tbody);
-                let td=$("<td>");
+                let td = $("<td>");
                 td.appendTo(tr);
-                td.text(_lstModelli.prop("nome"));
+                td.text((_lstModelli.prop("modello")).nome);
                 /********* */
                 td = $("<td>");
                 td.appendTo(tr);
-                td.text(_lstModelli.prop("alimentazione"));
+                td.text((_lstModelli.prop("modello")).alimentazione);
                 /******************** */
                 td = $("<td>");
                 td.appendTo(tr);
                 td.text(auto.colore);
-                /********************** */
+                /***********************/
                 td = $("<td>");
                 td.appendTo(tr);
                 td.text(auto.anno);
-                /*********************** */
+                /************************/
                 td = $("<td>");
                 td.appendTo(tr);
-                let img =$("<img>");
+                let img = $("<img>");
                 img.appendTo(td);
                 img.prop("src",`img/${auto.img}`);
                 img.css("height","65px");
-                /***************** */
+                /******************/
                 td = $("<td>");
                 td.appendTo(tr);
-                let btn =$("<button>");
+                let btn = $("<button>");
+                btn.addClass("btn btn-xs btn-success");
                 btn.appendTo(td);
                 btn.text("Dettagli");
-                /******** */
+                btn.prop("automobile", auto);// IMPORTANTE PASSO L'INTERO JSON DELL'AUTO
+                btn.on("click", dettagliClick);
+                /*********/
                 td = $("<td>");
                 td.appendTo(tr);
-                btn =$("<button>");
+                btn = $("<button>");
+                btn.prop("id", auto.id);
+                btn.addClass("btn btn-xs btn-secondary");
                 btn.appendTo(td);
                 btn.text("Elimina");
+                btn.on("click",eliminaClick)
             }
             
         })
     })
-    
+    let _salva = $("#btnSalva");
+    _salva.on("click",function(){
+        let url = URL + "/automobili/" + $("#txtId").val();
+        let request = inviaRichiesta("patch", url, {"prezzo":parseInt($("#txtPrezzo").val())})
+        request.fail(errore);
+        request.done(function(){
+            alert("record aggiornato correttamente");
+            _lstModelli.trigger("change");
+        })
+    })
 
+function eliminaClick(){
+    let url = URL + "/automobili/" + ($(this).prop("id"));
+    let request = inviaRichiesta("delete", url);
+    request.fail(errore);
+    request.done(function(){
+        alert("record eliminato correttamente");
+        // questo forza l'evento change come se avessi cliccato sul mouse
+        _lstModelli.trigger("change");
+
+    })
+}
+function dettagliClick(){
+    _dettagli.show();
+    $("#txtId").val(($(this).prop("automobile")).id);
+    $("#txtNome").val((_lstModelli.prop("modello")).nome);
+    $("#txtAlimentazione").val((_lstModelli.prop("modello")).alimentazione);
+    $("#txtCilindrata").val((_lstModelli.prop("modello")).cilindrata);
+    $("#txtTarga").val(($(this).prop("automobile")).targa);
+    $("#txtColore").val(($(this).prop("automobile")).colore);
+    $("#txtAnno").val(($(this).prop("automobile")).anno);
+    $("#txtKm").val(($(this).prop("automobile")).km);
+    $("#txtPrezzo").val(($(this).prop("automobile")).prezzo);
+
+
+
+}
        
 
 		
