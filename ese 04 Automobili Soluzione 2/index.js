@@ -1,5 +1,4 @@
-"use strict"
-
+"use strict";
 const URL = "http://localhost:3000"
 let intestazione = [{
     "tag":"th",
@@ -141,7 +140,6 @@ $(document).ready(function () {
                 btn.text("Elimina");
                 btn.on("click",eliminaClick)
             }
-            
         })
     })
     let _salva = $("#btnSalva");
@@ -163,7 +161,6 @@ function eliminaClick(){
         alert("record eliminato correttamente");
         // questo forza l'evento change come se avessi cliccato sul mouse
         _lstModelli.trigger("change");
-
     })
 }
 function dettagliClick(){
@@ -174,7 +171,6 @@ function dettagliClick(){
     $("#txtAnno").val(($(this).prop("automobile")).anno);
     $("#txtKm").val(($(this).prop("automobile")).km);
     $("#txtPrezzo").val(($(this).prop("automobile")).prezzo);
-
     // $("#txtNome").val((_lstModelli.prop("modello")).nome);
     // $("#txtAlimentazione").val((_lstModelli.prop("modello")).alimentazione);
     // $("#txtCilindrata").val((_lstModelli.prop("modello")).cilindrata);
