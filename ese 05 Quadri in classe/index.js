@@ -37,6 +37,7 @@ $(function () {
         chk.prop("checked", true);
         let idArtista = chk.prop("artista").id;
         genereQuadri = chk.prop("artista").gender;
+        _wrapperAdd.children("h1").text("Inserisci un nuovo quadro di " + chk.prop("artista").name);
         InviaRichiestaQuadri(idArtista);
         
     })
@@ -57,6 +58,7 @@ $(function () {
         _btnPrev.prop("disabled",true);
         let idArtista = $(this).prop("artista").id;
         let genere = $(this).prop("artista").gender;
+        _wrapperAdd.children("h1").text("Inserisci un nuovo quadro di " + $(this).prop("artista").name);
         // console.log(id);
         genereQuadri = genere;
         InviaRichiestaQuadri(idArtista);
@@ -86,7 +88,8 @@ $(function () {
         $("<p>").text("genere = " + genereQuadri).appendTo(_info);
         let img = $("<img>").prop("src","like.jpg").addClass("like");
         img.on("click",function(){
-            let request = inviaRichiesta("patch", URL +"/quadri/"+quadro.id, {
+            let request = inviaRichiesta("patch", URL + "/quadri/" + quadro.id,
+            {
                 "nLike" : quadro.nLike + 1
             })
             request.fail(errore);
@@ -100,12 +103,46 @@ $(function () {
             $("<img>").prop("src","img/" + quadro.img).appendTo(_img);
         else 
             $("<img>").prop("src", quadro.img).appendTo(_img);
-    }  
+    }
 
+    /***************************************************/  
+    
+    let _btnSalva = $("#btnSalva");
+    let _txtImg = $("#immagine");
+    let _txtTitle = $("#titolo");
+    let _btnAnnulla = $("#btnAnnulla");
 
-
-            /*let id = $("<label>");
-            id.text("ID = " + chk.val().id);*/
+    _btnSalva.on("click", function(){
+        if(_txtTitle.val() == "" || _txtImg.prop("files") == "")
+            alert("Inserire titole e immagine");
+        else 
+        {
+            let filename = _txtImg.prop("files")[0];
+            let reader = new FileReader();
+            reader.readAsDataURL(filename);
+            reader.onloadend = function() {
+                //console.log('RESULT', reader.result);
+                let idArtista = $("input[type='radio']:checked").prop("artista").id;
+                let jsonAus = {
+                    "artist": idArtista,
+                    "title": _txtTitle.val(),
+                    "img": reader.result,
+                    "nLike": 0
+                }
+                let request = inviaRichiesta("post",URL + "/quadri", jsonAus);
+                request.fail(errore);
+                request.done(function(data){
+                    console.log(data);
+                    alert("immagine iserita corretamente");
+                    InviaRichiestaQuadri(idArtista);
+                })
+                
+                
+            }
+            
+        }
+        
+        })
 
 
 
