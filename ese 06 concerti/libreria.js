@@ -1,5 +1,5 @@
 "use strict";
-
+const URL = "http://localhost:3000";
 function inviaRichiesta(method, url, parameters={}) {
 	let contentType;
 	if(method.toUpperCase()=="GET")
@@ -8,8 +8,10 @@ function inviaRichiesta(method, url, parameters={}) {
 		contentType = "application/json; charset=utf-8"
         parameters = JSON.stringify(parameters);
 	}
+    // $.ajax restituisce una promise che si mette in acolto delle risposta di $.ajax
+    // quando $.ajax risponde, la promise generea l' evento fail o l'evento done a seconda dei casi  
     return $.ajax({
-        "url": url,
+        "url": URL + url,
 		"data": parameters,
 		"type": method,   
 		"contentType": contentType, 
