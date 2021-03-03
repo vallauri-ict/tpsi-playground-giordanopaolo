@@ -7,11 +7,16 @@ $(document).ready(function () {
     const _tbody = $("table tbody");
 	const _divDettagli =$("#divDettagli")
     
-    _divDettagli.hide()    
+    _divDettagli.hide();
     caricaComboCitta();
     caricaComboGeneri();
     caricaTabella();
 
+    
+
+
+
+    /***********************************************/
     _lstCitta.on("click", "li", function(){
         let record = $(this).prop("citta");
         _lstCitta.prop("citta", record);
@@ -88,6 +93,7 @@ $(document).ready(function () {
         request.fail(errore);
         // il parametro viene iniettato automaticamente alla funzione puntata
         request.done(visualizzaConcerti);
+        _divDettagli.hide();
     }
 
     function visualizzaConcerti(concerti){
@@ -134,27 +140,61 @@ $(document).ready(function () {
             tdnPosti.appendTo(tr);
             let requestCitta = inviaRichiesta("get", "/citta/" + concerto.codCitta);
             requestCitta.fail(errore);
+            let nPostiMax;
             requestCitta.done(function(citta){
+                nPostiMax = citta.nPosti;
                 tdCitta.text(citta.citta);
                 tdStruttura.text(citta.struttura);
                 tdnPosti.text(citta.nPosti);
+
+                let tdButton = $("<td>");
+                tdButton.appendTo(tr);
+                let button = $("<button>");
+                button.text("dettagli");
+                button.addClass("btn btn-info btn-xs");
+                button.appendTo(tdButton);
+                button.on("click",function(){
+                    _divDettagli.show();
+                    if(concerto.nPostiOccupati != undefined)
+                        _divDettagli.children("textarea").val(concerto.dettagli + "\nPosti occupati: " + concerto.nPostiOccupati);
+                    else _divDettagli.children("textarea").val(concerto.dettagli+ "\n Posti occupati: 0");
+                })
+                tdButton = $("<td>");
+                tdButton.appendTo(tr);
+                if(concerto.nPostiOccupati == undefined || 
+                    parseInt(concerto.nPostiOccupati) < nPostiMax)
+                    {
+                        button = $("<button>");
+                        button.text("prenota");
+                        button.addClass("btn btn-success btn-xs");
+                        button.prop("nPosti",concerto.nPostiOccupati);
+                        button.appendTo(tdButton);
+                    }
             })
-
-            let tdButton = $("<td>");
-            tdButton.appendTo(tr);
-            let button = $("<button>");
-            button.text("dettagli");
-            button.addClass("btn btn-info btn-xs");
-            button.appendTo(tdButton);
-
-            tdButton = $("<td>");
-            tdButton.appendTo(tr);
-            button = $("<button>");
-            button.text("prenota");
-            button.addClass("btn btn-success btn-xs");
-            button.appendTo(tdButton);
         }
     }
 
-
+    /*****************************/
+    // vado a prende i button che implementano la classe btn-succes "button.btn-success"
+    _tbody.on("click", "button.btn-success",function(){
+        let id = $(this).parent().siblings().eq(0).text();
+        let nPosti = $(this).prop("nPosti");
+        let nPostiMax = parseInt($(this).parent().siblings().eq(6).text());
+        if(nPosti == undefined)
+            nPosti = 1;
+        else 
+        {
+            nPosti = parseInt(nPosti) + 1;
+            if(nPosti == nPostiMax)
+                alert("hai preso l'ultimo biglietto");
+        }
+            
+        let request = inviaRichiesta("patch", "/concerti/" + id, {"nPostiOccupati" : nPosti});
+        request.fail(errore);
+        request.done(function(info){
+            console.log(info);
+            alert("prenotazione eseguita correttamente");
+            caricaTabella();
+        });
+    } )
 })
