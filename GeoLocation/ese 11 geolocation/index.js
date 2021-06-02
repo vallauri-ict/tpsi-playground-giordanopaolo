@@ -1,7 +1,6 @@
 "use strict";
 
 const URL = "https://maps.googleapis.com/maps/api/staticmap?"
-const key  = "AIzaSyBZKYgxbiyRE7DknUpnRP2QHCBVjvLgH7g" 
 
 const params = {
 	"key" : key,
